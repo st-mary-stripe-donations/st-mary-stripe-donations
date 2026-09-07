@@ -1,0 +1,1601 @@
+<style>
+/* =========================================================
+   PARROISE ST. MARIE MADLEINE (LAGONAVE) FUND
+   Servant Keeper HTML Section
+   ========================================================= */
+
+#smm-lagonave-section {
+    --smm-navy: #16324a;
+    --smm-navy-dark: #0c2234;
+    --smm-blue: #1f5f9e;
+    --smm-blue-light: #dceafa;
+    --smm-red: #b43c43;
+    --smm-gold: #c69a45;
+    --smm-gold-light: #ead9ad;
+    --smm-cream: #f8f5ee;
+    --smm-white: #ffffff;
+    --smm-text: #39434c;
+    --smm-muted: #66727d;
+
+    width: 100%;
+    font-family: inherit;
+    color: var(--smm-text);
+    line-height: 1.65;
+    background: #fff;
+    overflow: hidden;
+}
+
+#smm-lagonave-section * { box-sizing: border-box; }
+#smm-lagonave-section a { text-decoration: none; }
+
+/* LANGUAGE BAR */
+.smm-language-bar {
+    width: 100%;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.smm-language-bar span {
+    color: var(--smm-navy);
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.smm-language-btn {
+    appearance: none;
+    border: 1px solid var(--smm-navy);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--smm-navy);
+    padding: 7px 13px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.smm-language-btn:hover,
+.smm-language-btn.smm-language-active {
+    background: var(--smm-navy);
+    color: #fff;
+}
+
+/* HERO */
+.smm-hero {
+    position: relative;
+    min-height: 590px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(90deg, rgba(6,24,39,.94) 0%, rgba(13,43,68,.84) 48%, rgba(17,57,90,.46) 100%),
+        linear-gradient(135deg, var(--smm-navy-dark), var(--smm-blue));
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.smm-hero:after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 7px;
+    background: linear-gradient(90deg, var(--smm-blue) 0 42%, #fff 42% 58%, var(--smm-red) 58% 100%);
+}
+
+.smm-hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    padding: 78px 30px;
+    margin: auto;
+}
+
+.smm-hero-content { max-width: 760px; }
+
+.smm-eyebrow {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 7px 15px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 40px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,.09);
+}
+
+.smm-hero h1 {
+    color: #fff;
+    margin: 0 0 10px;
+    font-size: clamp(39px, 5.6vw, 67px);
+    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -1.3px;
+}
+
+.smm-hero h2 {
+    margin: 0 0 25px;
+    color: var(--smm-gold-light);
+    font-size: clamp(22px, 3vw, 31px);
+    line-height: 1.3;
+    font-weight: 500;
+}
+
+.smm-hero p {
+    color: rgba(255,255,255,.94);
+    font-size: 19px;
+    line-height: 1.72;
+    margin: 0 0 32px;
+    max-width: 705px;
+}
+
+.smm-hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.smm-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 52px;
+    padding: 13px 27px;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 700;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.smm-btn:hover { transform: translateY(-2px); }
+
+.smm-btn-gold {
+    background: var(--smm-gold);
+    color: #fff !important;
+    box-shadow: 0 7px 22px rgba(0,0,0,.24);
+}
+
+.smm-btn-gold:hover {
+    background: #b58b3b;
+    box-shadow: 0 10px 28px rgba(0,0,0,.3);
+}
+
+.smm-btn-outline {
+    border: 2px solid rgba(255,255,255,.82);
+    color: #fff !important;
+    background: rgba(255,255,255,.06);
+}
+
+.smm-btn-outline:hover {
+    background: #fff;
+    color: var(--smm-navy) !important;
+}
+
+/* GENERAL */
+.smm-container {
+    max-width: 1160px;
+    margin: auto;
+    padding: 75px 25px;
+}
+
+.smm-section-heading {
+    max-width: 840px;
+    text-align: center;
+    margin: 0 auto 42px;
+}
+
+.smm-mini-title {
+    color: var(--smm-gold);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    margin-bottom: 7px;
+}
+
+.smm-section-heading h2,
+.smm-copy h2 {
+    color: var(--smm-navy);
+    font-size: clamp(31px, 4vw, 45px);
+    line-height: 1.15;
+    margin: 0 0 17px;
+}
+
+.smm-section-heading p {
+    margin: 0;
+    color: var(--smm-muted);
+    font-size: 18px;
+}
+
+/* FUND INFORMATION */
+.smm-intro { background: var(--smm-cream); }
+
+.smm-intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(285px, .75fr);
+    gap: 45px;
+    align-items: center;
+}
+
+.smm-copy p {
+    font-size: 17px;
+    margin: 0 0 18px;
+}
+
+.smm-copy p:last-child { margin-bottom: 0; }
+
+.smm-impact-card {
+    position: relative;
+    overflow: hidden;
+    padding: 38px 30px;
+    border-radius: 14px;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(145deg, var(--smm-navy), var(--smm-blue));
+    box-shadow: 0 12px 40px rgba(26,45,63,.18);
+}
+
+.smm-impact-card:before {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    top: -75px;
+    right: -60px;
+    background: rgba(255,255,255,.08);
+}
+
+.smm-impact-label {
+    position: relative;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: var(--smm-gold-light);
+}
+
+.smm-impact-number {
+    position: relative;
+    margin: 9px 0;
+    font-size: clamp(50px, 7vw, 70px);
+    line-height: 1;
+    font-weight: 800;
+}
+
+.smm-impact-description {
+    position: relative;
+    font-size: 16px;
+    color: rgba(255,255,255,.84);
+}
+
+/* NEEDS */
+.smm-needs { background: #fff; }
+
+.smm-needs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.smm-need {
+    padding: 32px 26px;
+    border: 1px solid #e4e8eb;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 6px 26px rgba(28,48,65,.06);
+}
+
+.smm-need-number {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: var(--smm-blue-light);
+    color: var(--smm-blue);
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.smm-need h3 {
+    color: var(--smm-navy);
+    margin: 0 0 10px;
+    font-size: 21px;
+}
+
+.smm-need p {
+    margin: 0;
+    color: var(--smm-muted);
+}
+
+/* COMMUNITY RESPONSE */
+.smm-community {
+    color: #fff;
+    background: var(--smm-navy-dark);
+}
+
+.smm-community .smm-section-heading h2 { color: #fff; }
+.smm-community .smm-section-heading p { color: rgba(255,255,255,.77); }
+
+.smm-community-card {
+    max-width: 930px;
+    margin: auto;
+    padding: 40px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.13);
+    box-shadow: 0 18px 48px rgba(0,0,0,.22);
+}
+
+.smm-community-card h3 {
+    margin: 0 0 14px;
+    color: var(--smm-gold-light);
+    font-size: 27px;
+}
+
+.smm-community-card p {
+    margin: 0 0 18px;
+    color: rgba(255,255,255,.9);
+    font-size: 17px;
+}
+
+.smm-community-card p:last-child { margin-bottom: 0; }
+
+/* GALLERY */
+.smm-gallery-section { background: #f7f8f9; }
+
+.smm-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 17px;
+}
+
+.smm-gallery figure {
+    position: relative;
+    min-height: 245px;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 11px;
+    background: #e6e7e8;
+    box-shadow: 0 5px 20px rgba(20,40,55,.1);
+}
+
+.smm-gallery figure:first-child { grid-column: span 2; }
+
+.smm-gallery img {
+    width: 100%;
+    height: 100%;
+    min-height: 245px;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s ease;
+}
+
+.smm-gallery figure:hover img { transform: scale(1.035); }
+
+.smm-gallery figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 35px 18px 14px;
+    color: #fff;
+    font-size: 14px;
+    background: linear-gradient(transparent, rgba(0,0,0,.78));
+}
+
+.smm-gallery-status {
+    grid-column: 1 / -1;
+    padding: 18px;
+    text-align: center;
+    color: var(--smm-muted);
+    border: 1px dashed #ccd2d6;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* LIVE SOURCE DETAILS */
+.smm-source-details { background: #fff; }
+
+.smm-source-content {
+    max-width: 900px;
+    margin: auto;
+    padding: 34px 38px;
+    border-left: 5px solid var(--smm-blue);
+    border-radius: 10px;
+    background: var(--smm-cream);
+    box-shadow: 0 8px 25px rgba(20,40,55,.07);
+}
+
+.smm-source-content h2,
+.smm-source-content h3,
+.smm-source-content h4 {
+    color: var(--smm-navy);
+    line-height: 1.25;
+}
+
+.smm-source-content p,
+.smm-source-content li { font-size: 16px; }
+
+.smm-source-content img,
+.smm-source-content iframe,
+.smm-source-content form,
+.smm-source-content button { display: none !important; }
+
+.smm-source-placeholder {
+    text-align: center;
+    color: var(--smm-muted);
+}
+
+/* DONATION CTA */
+.smm-donate {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background: linear-gradient(145deg, var(--smm-navy-dark), #123e63);
+}
+
+.smm-donate:before,
+.smm-donate:after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+}
+
+.smm-donate:before {
+    width: 380px;
+    height: 380px;
+    top: -180px;
+    right: -120px;
+}
+
+.smm-donate:after {
+    width: 300px;
+    height: 300px;
+    bottom: -170px;
+    left: -100px;
+}
+
+.smm-donate .smm-container {
+    position: relative;
+    z-index: 2;
+    max-width: 860px;
+}
+
+.smm-donate h2 {
+    margin: 0 0 18px;
+    color: #fff;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.15;
+}
+
+.smm-donate p {
+    max-width: 740px;
+    margin: 0 auto 28px;
+    color: rgba(255,255,255,.9);
+    font-size: 19px;
+}
+
+.smm-donate .smm-btn-gold {
+    min-width: 235px;
+    font-size: 18px;
+    padding: 16px 30px;
+}
+
+.smm-donate-note {
+    margin-top: 18px !important;
+    font-size: 13px !important;
+    color: rgba(255,255,255,.67) !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .smm-intro-grid { grid-template-columns: 1fr; }
+    .smm-needs-grid { grid-template-columns: 1fr; }
+    .smm-gallery { grid-template-columns: repeat(2, 1fr); }
+    .smm-gallery figure:first-child { grid-column: span 2; }
+}
+
+@media (max-width: 620px) {
+    .smm-hero { min-height: 530px; }
+    .smm-hero-inner { padding: 58px 20px; }
+    .smm-hero p { font-size: 17px; }
+    .smm-hero-buttons { display: block; }
+    .smm-btn { display: flex; width: 100%; margin-bottom: 11px; }
+    .smm-container { padding: 55px 18px; }
+    .smm-gallery { grid-template-columns: 1fr; }
+    .smm-gallery figure:first-child { grid-column: auto; }
+    .smm-community-card,
+    .smm-source-content { padding: 27px 23px; }
+}
+
+
+/* =========================================================
+   HIDDEN STRIPE DONATION PANEL
+   ========================================================= */
+.smm-payment-section[hidden] { display: none !important; }
+
+.smm-payment-section {
+    background: #eef3f7;
+    border-top: 1px solid #d8e0e6;
+    border-bottom: 1px solid #d8e0e6;
+}
+
+.smm-payment-shell {
+    position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 34px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 15px 50px rgba(17,44,67,.12);
+}
+
+.smm-payment-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d8e0e6;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--smm-navy);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.smm-payment-heading { padding-right: 48px; margin-bottom: 24px; }
+.smm-payment-heading h2 {
+    margin: 0 0 8px;
+    color: var(--smm-navy);
+    font-size: clamp(29px, 4vw, 40px);
+    line-height: 1.15;
+}
+.smm-payment-heading p { margin: 0; color: var(--smm-muted); }
+
+.smm-donation-builder {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.smm-donation-controls,
+.smm-stripe-box {
+    padding: 24px;
+    border: 1px solid #e0e6ea;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.smm-field-label {
+    display: block;
+    margin: 0 0 9px;
+    color: var(--smm-navy);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.smm-amount-wrap {
+    display: flex;
+    align-items: center;
+    border: 2px solid #cad5de;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.smm-currency {
+    padding: 0 14px;
+    color: var(--smm-navy);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+#smm-donation-amount {
+    width: 100%;
+    min-height: 54px;
+    border: 0;
+    outline: 0;
+    padding: 10px 14px 10px 0;
+    color: var(--smm-navy-dark);
+    font: inherit;
+    font-size: 21px;
+    font-weight: 700;
+    background: transparent;
+}
+
+.smm-frequency-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.smm-frequency-option { position: relative; }
+.smm-frequency-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.smm-frequency-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid #cbd6de;
+    border-radius: 8px;
+    color: var(--smm-navy);
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: .2s ease;
+}
+
+.smm-frequency-option input:checked + label {
+    border-color: var(--smm-blue);
+    background: var(--smm-blue);
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(31,95,158,.18);
+}
+
+.smm-start-payment {
+    width: 100%;
+    margin-top: 19px;
+    border: 0;
+    cursor: pointer;
+}
+
+.smm-start-payment:disabled,
+.smm-complete-payment:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none !important;
+}
+
+.smm-secure-note,
+.smm-recurring-note {
+    margin: 12px 0 0;
+    color: var(--smm-muted);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.smm-stripe-box { min-height: 210px; }
+.smm-stripe-placeholder {
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--smm-muted);
+    padding: 20px;
+    border: 1px dashed #ccd6de;
+    border-radius: 9px;
+    background: #f9fbfc;
+}
+
+#smm-contact-details-element,
+#smm-payment-element { margin-bottom: 18px; }
+#smm-embedded-checkout {
+    width: 100%;
+    min-height: 420px;
+}
+
+
+.smm-complete-payment {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+}
+
+.smm-payment-message {
+    margin-top: 15px;
+    padding: 11px 13px;
+    border-radius: 7px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.smm-payment-message:empty { display: none; }
+.smm-payment-message.smm-error { background: #fff0f0; color: #8f2929; border: 1px solid #efc3c3; }
+.smm-payment-message.smm-info { background: #eef6ff; color: #174d7d; border: 1px solid #c9ddf1; }
+.smm-payment-message.smm-success { background: #eef9f1; color: #23643a; border: 1px solid #c6e4cf; }
+
+.smm-payment-success {
+    display: none;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 35px;
+    border-radius: 14px;
+    text-align: center;
+    background: #eef9f1;
+    border: 1px solid #c6e4cf;
+}
+.smm-payment-success.smm-visible { display: block; }
+.smm-payment-success h3 { margin: 0 0 10px; color: #23643a; font-size: 28px; }
+.smm-payment-success p { margin: 0; color: #3f6650; }
+
+@media (max-width: 820px) {
+    .smm-donation-builder { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+    .smm-payment-shell { padding: 27px 18px; }
+    .smm-donation-controls, .smm-stripe-box { padding: 19px 15px; }
+    .smm-frequency-grid { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+
+<section id="smm-lagonave-section" lang="en">
+
+    <div class="smm-language-bar">
+        <span data-smm-key="language">Language:</span>
+        <button type="button" class="smm-language-btn smm-language-active" data-smm-language="en">English</button>
+        <button type="button" class="smm-language-btn" data-smm-language="ht">Kreyòl Ayisyen</button>
+        <button type="button" class="smm-language-btn" data-smm-language="fr">Français</button>
+        <button type="button" class="smm-language-btn" data-smm-language="es">Español</button>
+    </div>
+
+    <div class="smm-hero" id="smm-hero">
+        <div class="smm-hero-inner">
+            <div class="smm-hero-content">
+                <div class="smm-eyebrow" data-smm-key="location">St. Mary Church • Norwich, Connecticut • La Gonâve, Haiti</div>
+                <h1 data-smm-key="title">Parroise St. Marie Madleine (Lagonave) Fund</h1>
+                <h2 data-smm-key="heroSubtitle">St. Mary Church's Ongoing Support for the Children of La Gonave</h2>
+                <p data-smm-key="heroText">The children of the Parish of Sainte Madeleine in La Gonâve, Haiti, are facing a serious crisis. More than 600 children in this small, remote community struggle with access to education and adequate nutrition.</p>
+                <div class="smm-hero-buttons">
+                    <a class="smm-btn smm-btn-gold smm-donate-link" data-smm-key="donateNow" href="#smm-stripe-donation" role="button" aria-controls="smm-stripe-donation" aria-expanded="false">Donate Now</a>
+                    <a class="smm-btn smm-btn-outline" data-smm-key="seeChildren" href="#smm-photo-gallery">See the Children</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-intro">
+        <div class="smm-container">
+            <div class="smm-intro-grid">
+                <div class="smm-copy">
+                    <div class="smm-mini-title" data-smm-key="fundInfo">Fund Information</div>
+                    <h2 data-smm-key="standingTitle">Standing With the Children of La Gonâve</h2>
+                    <p data-smm-key="intro1">The Parish of Sainte Madeleine is a lifeline to its community, striving to meet the needs of its children despite a very difficult situation.</p>
+                    <p data-smm-key="intro2">The fund page highlights more than 600 children whose lives are affected by limited access to basic education and nutrition.</p>
+                    <p data-smm-key="intro3">St. Mary Church in Norwich continues to support the children of La Gonâve in a spirit of Catholic solidarity, charity, and social justice.</p>
+                </div>
+
+                <aside class="smm-impact-card">
+                    <div class="smm-impact-label" data-smm-key="childrenHighlighted">Children Highlighted by the Fund</div>
+                    <div class="smm-impact-number">600+</div>
+                    <div class="smm-impact-description" data-smm-key="impactDescription">Children in a remote community facing serious challenges involving education and nutrition.</div>
+                    <br>
+                    <a class="smm-btn smm-btn-gold smm-donate-link" data-smm-key="makeDonation" href="#smm-stripe-donation" role="button" aria-controls="smm-stripe-donation" aria-expanded="false">Make a Donation</a>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-needs">
+        <div class="smm-container">
+            <div class="smm-section-heading">
+                <div class="smm-mini-title" data-smm-key="whyHelp">Why Your Help Matters</div>
+                <h2 data-smm-key="needsTitle">Faith in Action Across the Sea</h2>
+                <p data-smm-key="needsText">This fund connects the Norwich parish community with children and families in La Gonâve through prayer, solidarity, and practical support.</p>
+            </div>
+
+            <div class="smm-needs-grid">
+                <article class="smm-need">
+                    <div class="smm-need-number">01</div>
+                    <h3 data-smm-key="educationTitle">Access to Education</h3>
+                    <p data-smm-key="educationText">Many children highlighted by the fund do not have reliable access to the education every child deserves.</p>
+                </article>
+
+                <article class="smm-need">
+                    <div class="smm-need-number">02</div>
+                    <h3 data-smm-key="nutritionTitle">Nutrition and Basic Needs</h3>
+                    <p data-smm-key="nutritionText">The fund page also calls attention to the serious challenge of adequate nutrition for children in the community.</p>
+                </article>
+
+                <article class="smm-need">
+                    <div class="smm-need-number">03</div>
+                    <h3 data-smm-key="solidarityTitle">Catholic Solidarity</h3>
+                    <p data-smm-key="solidarityText">St. Mary Church's ongoing support reflects a commitment to charity, human dignity, and social justice.</p>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-community">
+        <div class="smm-container">
+            <div class="smm-section-heading">
+                <div class="smm-mini-title" data-smm-key="communityResponse">Community Response</div>
+                <h2 data-smm-key="communityTitle">A Relationship of Faith and Hope</h2>
+                <p data-smm-key="communitySubtitle">The fund is more than a collection. It is an expression of communion with a Catholic community facing extraordinary hardship.</p>
+            </div>
+
+            <div class="smm-community-card">
+                <h3 data-smm-key="ongoingSupport">St. Mary Church's Ongoing Support</h3>
+                <p data-smm-key="community1">The children of Sainte Madeleine are not simply names or statistics. They belong to a faith community whose needs have become part of St. Mary Church's continuing concern and outreach.</p>
+                <p data-smm-key="community2">By supporting this fund, parishioners and friends help keep attention focused on the children of La Gonâve and the urgent needs described by the parish fund.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-gallery-section" id="smm-photo-gallery">
+        <div class="smm-container">
+            <div class="smm-section-heading">
+                <div class="smm-mini-title" data-smm-key="galleryMini">La Gonâve, Haiti</div>
+                <h2 data-smm-key="galleryTitle">Children of Sainte Madeleine</h2>
+                <p data-smm-key="galleryText">This gallery automatically imports the content photos from the existing La Gonâve fund page so the images remain connected to the original parish story.</p>
+            </div>
+
+            <div class="smm-gallery" id="smm-source-gallery">
+                <div class="smm-gallery-status" id="smm-gallery-status" data-smm-key="loadingImages">Loading the original fund-page photos…</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-source-details" id="smm-live-details">
+        <div class="smm-container">
+            <div class="smm-section-heading">
+                <div class="smm-mini-title" data-smm-key="sourceMini">From the Original Fund Page</div>
+                <h2 data-smm-key="sourceTitle">Additional Fund Information</h2>
+                <p data-smm-key="sourceText">When the original page is reachable from this website, additional text from it is loaded here automatically.</p>
+            </div>
+            <div class="smm-source-content" id="smm-source-content">
+                <p class="smm-source-placeholder" data-smm-key="loadingInfo">Loading additional information from the original fund page…</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="smm-donate">
+        <div class="smm-container">
+            <h2 data-smm-key="donateTitle">Help the Children of La Gonâve</h2>
+            <p data-smm-key="donationText">Your generosity supports St. Mary Church's ongoing response to the needs highlighted by the Sainte Madeleine community in La Gonâve, Haiti.</p>
+            <a class="smm-btn smm-btn-gold smm-donate-link" data-smm-key="donateNow" href="#smm-stripe-donation" role="button" aria-controls="smm-stripe-donation" aria-expanded="false">Donate Now</a>
+            <p class="smm-donate-note" data-smm-key="donationNote">The donation button securely opens the Joint Norwich Catholic Cluster Donations page in a new tab.</p>
+        </div>
+    </div>
+
+
+    <!-- =====================================================
+         HIDDEN STRIPE DONATION FORM
+         This section is revealed only after a Donate button is pressed.
+         Card data is collected by Stripe Elements, not by this website.
+         ===================================================== -->
+    <div class="smm-payment-section" id="smm-stripe-donation" hidden>
+        <div class="smm-container">
+            <div class="smm-payment-shell">
+                <button type="button" class="smm-payment-close" id="smm-payment-close" aria-label="Close donation form">&times;</button>
+
+                <div class="smm-payment-heading">
+                    <div class="smm-mini-title" data-smm-key="secureDonation">Secure Donation</div>
+                    <h2 data-smm-key="chooseGift">Choose Your Gift</h2>
+                    <p data-smm-key="chooseGiftText">Select an amount and how often you would like to give. Your card information is entered securely through Stripe.</p>
+                </div>
+
+                <div class="smm-payment-success" id="smm-payment-success" aria-live="polite">
+                    <h3 data-smm-key="thankYouTitle">Thank You for Your Donation</h3>
+                    <p data-smm-key="thankYouText">Your generosity helps support the children of Sainte Madeleine in La Gonâve, Haiti.</p>
+                </div>
+
+                <div class="smm-donation-builder" id="smm-donation-builder">
+                    <div class="smm-donation-controls">
+                        <label class="smm-field-label" for="smm-donation-amount" data-smm-key="donationAmount">Donation Amount (USD)</label>
+                        <div class="smm-amount-wrap">
+                            <span class="smm-currency">$</span>
+                            <input id="smm-donation-amount" type="number" min="1" max="100000" step="0.01" value="25.00" inputmode="decimal" autocomplete="off" aria-label="Donation amount in US dollars">
+                        </div>
+
+                        <span class="smm-field-label" style="margin-top:18px" data-smm-key="giftFrequency">Gift Frequency</span>
+                        <div class="smm-frequency-grid" role="radiogroup" aria-label="Donation frequency">
+                            <div class="smm-frequency-option">
+                                <input type="radio" name="smm-frequency" id="smm-freq-once" value="one_time" checked>
+                                <label for="smm-freq-once" data-smm-key="oneTime">One Time</label>
+                            </div>
+                            <div class="smm-frequency-option">
+                                <input type="radio" name="smm-frequency" id="smm-freq-weekly" value="weekly">
+                                <label for="smm-freq-weekly" data-smm-key="weekly">Weekly</label>
+                            </div>
+                            <div class="smm-frequency-option">
+                                <input type="radio" name="smm-frequency" id="smm-freq-monthly" value="monthly">
+                                <label for="smm-freq-monthly" data-smm-key="monthly">Monthly</label>
+                            </div>
+                            <div class="smm-frequency-option">
+                                <input type="radio" name="smm-frequency" id="smm-freq-yearly" value="yearly">
+                                <label for="smm-freq-yearly" data-smm-key="yearly">Yearly</label>
+                            </div>
+                        </div>
+
+                        <button type="button" class="smm-btn smm-btn-gold smm-start-payment" id="smm-start-payment" data-smm-key="continueSecurely">Continue to Secure Payment</button>
+                        <p class="smm-secure-note" data-smm-key="stripeSecurity">Payment details are encrypted and handled directly by Stripe. This website does not receive or store your full card number.</p>
+                        <p class="smm-recurring-note" id="smm-recurring-disclosure" data-smm-key="recurringDisclosure">For recurring gifts, the selected amount will be charged automatically at the frequency you choose until the subscription is canceled.</p>
+                    </div>
+
+                    <div class="smm-stripe-box">
+                        <div class="smm-stripe-placeholder" id="smm-stripe-placeholder" data-smm-key="paymentPlaceholder">Choose your amount and frequency, then press “Continue to Secure Payment” to load the secure Stripe form.</div>
+                        <div id="smm-embedded-checkout" style="display:none"></div>
+                        <div class="smm-payment-message" id="smm-payment-message" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script src="https://js.stripe.com/clover/stripe.js"></script>
+<script>
+(function () {
+    "use strict";
+
+    var SOURCE_URL = "https://www.jnccfaith.org/parroise-st.-marie-madleine(-lagonave)";
+
+    /* ==========================================================
+       STATIC TRANSLATIONS
+       ========================================================== */
+    var translations = {
+        en: {
+            language: "Language:",
+            location: "St. Mary Church • Norwich, Connecticut • La Gonâve, Haiti",
+            title: "Parroise St. Marie Madleine (Lagonave) Fund",
+            heroSubtitle: "St. Mary Church's Ongoing Support for the Children of La Gonave",
+            heroText: "The children of the Parish of Sainte Madeleine in La Gonâve, Haiti, are facing a serious crisis. More than 600 children in this small, remote community struggle with access to education and adequate nutrition.",
+            donateNow: "Donate Now",
+            seeChildren: "See the Children",
+            fundInfo: "Fund Information",
+            standingTitle: "Standing With the Children of La Gonâve",
+            intro1: "The Parish of Sainte Madeleine is a lifeline to its community, striving to meet the needs of its children despite a very difficult situation.",
+            intro2: "The fund page highlights more than 600 children whose lives are affected by limited access to basic education and nutrition.",
+            intro3: "St. Mary Church in Norwich continues to support the children of La Gonâve in a spirit of Catholic solidarity, charity, and social justice.",
+            childrenHighlighted: "Children Highlighted by the Fund",
+            impactDescription: "Children in a remote community facing serious challenges involving education and nutrition.",
+            makeDonation: "Make a Donation",
+            whyHelp: "Why Your Help Matters",
+            needsTitle: "Faith in Action Across the Sea",
+            needsText: "This fund connects the Norwich parish community with children and families in La Gonâve through prayer, solidarity, and practical support.",
+            educationTitle: "Access to Education",
+            educationText: "Many children highlighted by the fund do not have reliable access to the education every child deserves.",
+            nutritionTitle: "Nutrition and Basic Needs",
+            nutritionText: "The fund page also calls attention to the serious challenge of adequate nutrition for children in the community.",
+            solidarityTitle: "Catholic Solidarity",
+            solidarityText: "St. Mary Church's ongoing support reflects a commitment to charity, human dignity, and social justice.",
+            communityResponse: "Community Response",
+            communityTitle: "A Relationship of Faith and Hope",
+            communitySubtitle: "The fund is more than a collection. It is an expression of communion with a Catholic community facing extraordinary hardship.",
+            ongoingSupport: "St. Mary Church's Ongoing Support",
+            community1: "The children of Sainte Madeleine are not simply names or statistics. They belong to a faith community whose needs have become part of St. Mary Church's continuing concern and outreach.",
+            community2: "By supporting this fund, parishioners and friends help keep attention focused on the children of La Gonâve and the urgent needs described by the parish fund.",
+            galleryMini: "La Gonâve, Haiti",
+            galleryTitle: "Children of Sainte Madeleine",
+            galleryText: "This gallery automatically imports the content photos from the existing La Gonâve fund page so the images remain connected to the original parish story.",
+            loadingImages: "Loading the original fund-page photos…",
+            sourceMini: "From the Original Fund Page",
+            sourceTitle: "Additional Fund Information",
+            sourceText: "When the original page is reachable from this website, additional text from it is loaded here automatically.",
+            loadingInfo: "Loading additional information from the original fund page…",
+            donateTitle: "Help the Children of La Gonâve",
+            donationText: "Your generosity supports St. Mary Church's ongoing response to the needs highlighted by the Sainte Madeleine community in La Gonâve, Haiti.",
+            donationNote: "Press Donate to open the secure on-page giving form.",
+            secureDonation: "Secure Donation",
+            chooseGift: "Choose Your Gift",
+            chooseGiftText: "Select an amount and how often you would like to give. Your card information is entered securely through Stripe.",
+            donationAmount: "Donation Amount (USD)",
+            giftFrequency: "Gift Frequency",
+            oneTime: "One Time",
+            weekly: "Weekly",
+            monthly: "Monthly",
+            yearly: "Yearly",
+            continueSecurely: "Continue to Secure Payment",
+            stripeSecurity: "Payment details are encrypted and handled directly by Stripe. This website does not receive or store your full card number.",
+            recurringDisclosure: "For recurring gifts, the selected amount will be charged automatically at the frequency you choose until the subscription is canceled.",
+            paymentPlaceholder: "Choose your amount and frequency, then press “Continue to Secure Payment” to load the credit-card form.",
+            completeDonation: "Complete Donation",
+            thankYouTitle: "Thank You for Your Donation",
+            thankYouText: "Your generosity helps support the children of Sainte Madeleine in La Gonâve, Haiti."
+        },
+
+        ht: {
+            language: "Lang:",
+            location: "Legliz St. Mary • Norwich, Connecticut • Lagonav, Ayiti",
+            title: "Fon Parroise St. Marie Madleine (Lagonave)",
+            heroSubtitle: "Sipò Kontinyèl Legliz St. Mary pou Timoun Lagonav yo",
+            heroText: "Timoun Pawas Sainte Madeleine nan Lagonav, Ayiti, ap fè fas ak yon kriz grav. Plis pase 600 timoun nan ti kominote lwen sa a gen difikilte pou jwenn edikasyon ak bon nitrisyon.",
+            donateNow: "Fè Don Kounye a",
+            seeChildren: "Gade Timoun yo",
+            fundInfo: "Enfòmasyon sou Fon an",
+            standingTitle: "Kanpe Ansanm ak Timoun Lagonav yo",
+            intro1: "Pawas Sainte Madeleine se yon poto mitan pou kominote li a epi li ap fè efò pou reponn bezwen timoun yo malgre sitiyasyon an difisil anpil.",
+            intro2: "Paj fon an mete aksan sou plis pase 600 timoun ki afekte pa mank aksè a edikasyon ak nitrisyon debaz.",
+            intro3: "Legliz St. Mary nan Norwich kontinye soutni timoun Lagonav yo nan yon lespri solidarite Katolik, charite ak jistis sosyal.",
+            childrenHighlighted: "Timoun Fon an Mete Anvan",
+            impactDescription: "Timoun nan yon kominote lwen ki ap fè fas ak gwo defi nan edikasyon ak nitrisyon.",
+            makeDonation: "Fè yon Don",
+            whyHelp: "Poukisa Èd Ou Enpòtan",
+            needsTitle: "Lafwa an Aksyon Lòtbò Lanmè",
+            needsText: "Fon sa a konekte kominote pawasyal Norwich la ak timoun ak fanmi Lagonav yo atravè lapriyè, solidarite ak sipò konkrè.",
+            educationTitle: "Aksè ak Edikasyon",
+            educationText: "Anpil timoun fon an pale de yo pa gen aksè regilye ak edikasyon chak timoun merite.",
+            nutritionTitle: "Nitrisyon ak Bezwen Debaz",
+            nutritionText: "Paj fon an mete aksan tou sou gwo pwoblèm nitrisyon adekwa pou timoun nan kominote a.",
+            solidarityTitle: "Solidarite Katolik",
+            solidarityText: "Sipò kontinyèl Legliz St. Mary montre yon angajman pou charite, diyite moun ak jistis sosyal.",
+            communityResponse: "Repons Kominote a",
+            communityTitle: "Yon Relasyon Lafwa ak Espwa",
+            communitySubtitle: "Fon an plis pase yon koleksyon. Li se yon siy kominyon ak yon kominote Katolik ki ap fè fas ak gwo difikilte.",
+            ongoingSupport: "Sipò Kontinyèl Legliz St. Mary",
+            community1: "Timoun Sainte Madeleine yo pa senpleman non oswa estatistik. Yo fè pati yon kominote lafwa ki vin antre nan sousi ak sèvis kontinyèl Legliz St. Mary.",
+            community2: "Lè pawasyen ak zanmi soutni fon sa a, yo ede kenbe atansyon sou timoun Lagonav yo ak bezwen ijan pawas la prezante.",
+            galleryMini: "Lagonav, Ayiti",
+            galleryTitle: "Timoun Sainte Madeleine",
+            galleryText: "Galri sa a enpòte otomatikman foto kontni ki sou paj fon Lagonav la pou foto yo rete konekte ak istwa orijinal pawas la.",
+            loadingImages: "N ap chaje foto ki sou paj fon orijinal la…",
+            sourceMini: "Soti nan Paj Fon Orijinal la",
+            sourceTitle: "Lòt Enfòmasyon sou Fon an",
+            sourceText: "Lè sit la kapab jwenn paj orijinal la, lòt enfòmasyon ki ladan li ap parèt isit la otomatikman.",
+            loadingInfo: "N ap chaje lòt enfòmasyon ki soti nan paj fon orijinal la…",
+            donateTitle: "Ede Timoun Lagonav yo",
+            donationText: "Jenerozite ou soutni repons kontinyèl Legliz St. Mary pou bezwen kominote Sainte Madeleine nan Lagonav, Ayiti.",
+            donationNote: "Peze Fè Don pou ouvri fòm peman an sekirite sou paj la.",
+            secureDonation: "Don Sekirize",
+            chooseGift: "Chwazi Don Ou",
+            chooseGiftText: "Chwazi kantite lajan an ak konbyen fwa ou vle bay. Enfòmasyon kat ou antre an sekirite atravè Stripe.",
+            donationAmount: "Kantite Don an (USD)",
+            giftFrequency: "Frekans Don an",
+            oneTime: "Yon Sèl Fwa",
+            weekly: "Chak Semèn",
+            monthly: "Chak Mwa",
+            yearly: "Chak Ane",
+            continueSecurely: "Kontinye nan Peman Sekirize",
+            stripeSecurity: "Stripe chifre epi trete enfòmasyon peman yo dirèkteman. Sit sa a pa resevwa ni sere nimewo kat ou an antye.",
+            recurringDisclosure: "Pou don renouvlab, kantite ou chwazi a ap chaje otomatikman selon frekans ou chwazi a jiskaske abònman an anile.",
+            paymentPlaceholder: "Chwazi kantite lajan ak frekans lan, epi peze “Kontinye nan Peman Sekirize” pou chaje fòm kat kredi a.",
+            completeDonation: "Fini Don an",
+            thankYouTitle: "Mèsi pou Don Ou",
+            thankYouText: "Jenerozite ou ede soutni timoun Sainte Madeleine nan Lagonav, Ayiti."
+        },
+
+        fr: {
+            language: "Langue :",
+            location: "Église St. Mary • Norwich, Connecticut • La Gonâve, Haïti",
+            title: "Fonds Parroise St. Marie Madleine (Lagonave)",
+            heroSubtitle: "Le soutien continu de l'église St. Mary aux enfants de La Gonâve",
+            heroText: "Les enfants de la paroisse Sainte Madeleine à La Gonâve, en Haïti, font face à une grave crise. Plus de 600 enfants de cette petite communauté isolée ont un accès limité à l'éducation et à une nutrition adéquate.",
+            donateNow: "Faire un don",
+            seeChildren: "Voir les enfants",
+            fundInfo: "Information sur le fonds",
+            standingTitle: "Aux côtés des enfants de La Gonâve",
+            intro1: "La paroisse Sainte Madeleine est un soutien essentiel pour sa communauté et cherche à répondre aux besoins des enfants malgré une situation très difficile.",
+            intro2: "La page du fonds met en lumière plus de 600 enfants touchés par un accès limité à l'éducation et à la nutrition de base.",
+            intro3: "L'église St. Mary de Norwich continue de soutenir les enfants de La Gonâve dans un esprit de solidarité catholique, de charité et de justice sociale.",
+            childrenHighlighted: "Enfants mis en lumière par le fonds",
+            impactDescription: "Enfants d'une communauté isolée confrontés à de graves défis en matière d'éducation et de nutrition.",
+            makeDonation: "Faire un don",
+            whyHelp: "Pourquoi votre aide compte",
+            needsTitle: "La foi en action au-delà de la mer",
+            needsText: "Ce fonds relie la communauté paroissiale de Norwich aux enfants et aux familles de La Gonâve par la prière, la solidarité et un soutien concret.",
+            educationTitle: "Accès à l'éducation",
+            educationText: "De nombreux enfants présentés par le fonds n'ont pas un accès fiable à l'éducation que chaque enfant mérite.",
+            nutritionTitle: "Nutrition et besoins essentiels",
+            nutritionText: "La page du fonds souligne également le grave défi d'une nutrition adéquate pour les enfants de la communauté.",
+            solidarityTitle: "Solidarité catholique",
+            solidarityText: "Le soutien continu de St. Mary reflète un engagement envers la charité, la dignité humaine et la justice sociale.",
+            communityResponse: "Réponse de la communauté",
+            communityTitle: "Une relation de foi et d'espérance",
+            communitySubtitle: "Le fonds est plus qu'une collecte : il exprime la communion avec une communauté catholique confrontée à de grandes difficultés.",
+            ongoingSupport: "Le soutien continu de l'église St. Mary",
+            community1: "Les enfants de Sainte Madeleine ne sont pas de simples noms ou statistiques. Ils appartiennent à une communauté de foi dont les besoins font partie de la préoccupation et de l'action continues de St. Mary.",
+            community2: "En soutenant ce fonds, les paroissiens et amis contribuent à maintenir l'attention sur les enfants de La Gonâve et sur les besoins urgents décrits par la paroisse.",
+            galleryMini: "La Gonâve, Haïti",
+            galleryTitle: "Les enfants de Sainte Madeleine",
+            galleryText: "Cette galerie importe automatiquement les photos de contenu de la page actuelle du fonds de La Gonâve afin de conserver leur lien avec l'histoire paroissiale originale.",
+            loadingImages: "Chargement des photos de la page originale du fonds…",
+            sourceMini: "Depuis la page originale du fonds",
+            sourceTitle: "Informations supplémentaires",
+            sourceText: "Lorsque la page originale est accessible depuis ce site, des informations supplémentaires sont chargées ici automatiquement.",
+            loadingInfo: "Chargement d'informations supplémentaires depuis la page originale…",
+            donateTitle: "Aidez les enfants de La Gonâve",
+            donationText: "Votre générosité soutient la réponse continue de St. Mary aux besoins mis en lumière par la communauté Sainte Madeleine à La Gonâve, en Haïti.",
+            donationNote: "Appuyez sur Faire un don pour ouvrir le formulaire sécurisé directement sur cette page.",
+            secureDonation: "Don sécurisé",
+            chooseGift: "Choisissez votre don",
+            chooseGiftText: "Choisissez un montant et la fréquence de votre don. Les informations de votre carte sont saisies en toute sécurité par Stripe.",
+            donationAmount: "Montant du don (USD)",
+            giftFrequency: "Fréquence du don",
+            oneTime: "Une fois",
+            weekly: "Chaque semaine",
+            monthly: "Chaque mois",
+            yearly: "Chaque année",
+            continueSecurely: "Continuer vers le paiement sécurisé",
+            stripeSecurity: "Les informations de paiement sont chiffrées et traitées directement par Stripe. Ce site ne reçoit ni ne conserve le numéro complet de votre carte.",
+            recurringDisclosure: "Pour les dons récurrents, le montant choisi sera débité automatiquement selon la fréquence sélectionnée jusqu’à l’annulation de l’abonnement.",
+            paymentPlaceholder: "Choisissez le montant et la fréquence, puis appuyez sur “Continuer vers le paiement sécurisé” pour charger le formulaire de carte.",
+            completeDonation: "Finaliser le don",
+            thankYouTitle: "Merci pour votre don",
+            thankYouText: "Votre générosité aide les enfants de Sainte Madeleine à La Gonâve, en Haïti."
+        },
+
+        es: {
+            language: "Idioma:",
+            location: "Iglesia Santa María • Norwich, Connecticut • La Gonâve, Haití",
+            title: "Fondo Parroise St. Marie Madleine (Lagonave)",
+            heroSubtitle: "El apoyo continuo de la Iglesia Santa María a los niños de La Gonâve",
+            heroText: "Los niños de la parroquia Sainte Madeleine en La Gonâve, Haití, enfrentan una grave crisis. Más de 600 niños de esta pequeña comunidad remota tienen acceso limitado a la educación y a una nutrición adecuada.",
+            donateNow: "Donar Ahora",
+            seeChildren: "Ver a los Niños",
+            fundInfo: "Información del Fondo",
+            standingTitle: "Junto a los Niños de La Gonâve",
+            intro1: "La parroquia Sainte Madeleine es un apoyo vital para su comunidad y se esfuerza por atender las necesidades de sus niños a pesar de una situación muy difícil.",
+            intro2: "La página del fondo destaca a más de 600 niños cuyas vidas se ven afectadas por el acceso limitado a la educación básica y a la nutrición.",
+            intro3: "La Iglesia Santa María en Norwich continúa apoyando a los niños de La Gonâve con un espíritu de solidaridad católica, caridad y justicia social.",
+            childrenHighlighted: "Niños Destacados por el Fondo",
+            impactDescription: "Niños de una comunidad remota que enfrentan serios desafíos de educación y nutrición.",
+            makeDonation: "Hacer una Donación",
+            whyHelp: "Por Qué Su Ayuda Importa",
+            needsTitle: "La Fe en Acción Más Allá del Mar",
+            needsText: "Este fondo conecta a la comunidad parroquial de Norwich con los niños y las familias de La Gonâve mediante la oración, la solidaridad y el apoyo práctico.",
+            educationTitle: "Acceso a la Educación",
+            educationText: "Muchos de los niños destacados por el fondo no tienen acceso confiable a la educación que todo niño merece.",
+            nutritionTitle: "Nutrición y Necesidades Básicas",
+            nutritionText: "La página del fondo también llama la atención sobre el serio desafío de una nutrición adecuada para los niños de la comunidad.",
+            solidarityTitle: "Solidaridad Católica",
+            solidarityText: "El apoyo continuo de Santa María refleja un compromiso con la caridad, la dignidad humana y la justicia social.",
+            communityResponse: "Respuesta de la Comunidad",
+            communityTitle: "Una Relación de Fe y Esperanza",
+            communitySubtitle: "El fondo es más que una colecta: es una expresión de comunión con una comunidad católica que enfrenta grandes dificultades.",
+            ongoingSupport: "El Apoyo Continuo de la Iglesia Santa María",
+            community1: "Los niños de Sainte Madeleine no son simplemente nombres o estadísticas. Pertenecen a una comunidad de fe cuyas necesidades forman parte de la preocupación y el alcance continuo de Santa María.",
+            community2: "Al apoyar este fondo, los feligreses y amigos ayudan a mantener la atención sobre los niños de La Gonâve y las necesidades urgentes descritas por la parroquia.",
+            galleryMini: "La Gonâve, Haití",
+            galleryTitle: "Los Niños de Sainte Madeleine",
+            galleryText: "Esta galería importa automáticamente las fotos de contenido de la página actual del fondo de La Gonâve para mantenerlas conectadas con la historia parroquial original.",
+            loadingImages: "Cargando las fotos de la página original del fondo…",
+            sourceMini: "Desde la Página Original del Fondo",
+            sourceTitle: "Información Adicional del Fondo",
+            sourceText: "Cuando la página original puede ser accedida desde este sitio, se carga aquí automáticamente información adicional.",
+            loadingInfo: "Cargando información adicional desde la página original del fondo…",
+            donateTitle: "Ayude a los Niños de La Gonâve",
+            donationText: "Su generosidad apoya la respuesta continua de Santa María a las necesidades destacadas por la comunidad Sainte Madeleine en La Gonâve, Haití.",
+            donationNote: "Presione Donar para abrir el formulario seguro directamente en esta página.",
+            secureDonation: "Donación Segura",
+            chooseGift: "Elija Su Donación",
+            chooseGiftText: "Seleccione una cantidad y la frecuencia de su donación. La información de su tarjeta se ingresa de forma segura mediante Stripe.",
+            donationAmount: "Cantidad de la Donación (USD)",
+            giftFrequency: "Frecuencia de la Donación",
+            oneTime: "Una Vez",
+            weekly: "Semanal",
+            monthly: "Mensual",
+            yearly: "Anual",
+            continueSecurely: "Continuar al Pago Seguro",
+            stripeSecurity: "Los datos de pago son cifrados y procesados directamente por Stripe. Este sitio no recibe ni almacena el número completo de su tarjeta.",
+            recurringDisclosure: "Para donaciones recurrentes, la cantidad seleccionada se cobrará automáticamente con la frecuencia elegida hasta que se cancele la suscripción.",
+            paymentPlaceholder: "Elija la cantidad y la frecuencia, luego presione “Continuar al Pago Seguro” para cargar el formulario de tarjeta de crédito.",
+            completeDonation: "Completar Donación",
+            thankYouTitle: "Gracias por Su Donación",
+            thankYouText: "Su generosidad ayuda a apoyar a los niños de Sainte Madeleine en La Gonâve, Haití."
+        }
+    };
+
+    function changeLanguage(language) {
+        if (!translations[language]) language = "en";
+
+        var elements = document.querySelectorAll("#smm-lagonave-section [data-smm-key]");
+        for (var i = 0; i < elements.length; i++) {
+            var key = elements[i].getAttribute("data-smm-key");
+            if (translations[language][key]) {
+                elements[i].textContent = translations[language][key];
+            }
+        }
+
+        var buttons = document.querySelectorAll("#smm-lagonave-section .smm-language-btn");
+        for (var b = 0; b < buttons.length; b++) {
+            buttons[b].classList.remove("smm-language-active");
+            if (buttons[b].getAttribute("data-smm-language") === language) {
+                buttons[b].classList.add("smm-language-active");
+            }
+        }
+
+        var section = document.getElementById("smm-lagonave-section");
+        if (section) section.setAttribute("lang", language);
+    }
+
+    var languageButtons = document.querySelectorAll("#smm-lagonave-section .smm-language-btn");
+    for (var i = 0; i < languageButtons.length; i++) {
+        languageButtons[i].addEventListener("click", function () {
+            changeLanguage(this.getAttribute("data-smm-language"));
+        });
+    }
+
+
+
+    /* ==========================================================
+       STRIPE DONATION PANEL — EMBEDDED CHECKOUT
+       ========================================================== */
+    var STRIPE_API_BASE = "https://st-mary-stripe-donations.vercel.app";
+    var paymentSection = document.getElementById("smm-stripe-donation");
+    var paymentClose = document.getElementById("smm-payment-close");
+    var amountInput = document.getElementById("smm-donation-amount");
+    var startPaymentButton = document.getElementById("smm-start-payment");
+    var stripePlaceholder = document.getElementById("smm-stripe-placeholder");
+    var embeddedContainer = document.getElementById("smm-embedded-checkout");
+    var paymentMessage = document.getElementById("smm-payment-message");
+    var paymentSuccess = document.getElementById("smm-payment-success");
+    var donationBuilder = document.getElementById("smm-donation-builder");
+    var embeddedCheckout = null;
+
+    function apiUrl(path) {
+        return STRIPE_API_BASE.replace(/\/$/, "") + path;
+    }
+
+    function showPaymentMessage(message, type) {
+        if (!paymentMessage) return;
+        paymentMessage.textContent = message || "";
+        paymentMessage.className = "smm-payment-message" + (type ? " smm-" + type : "");
+    }
+
+    function openDonationPanel(event) {
+        if (event) event.preventDefault();
+        if (!paymentSection) return;
+        paymentSection.hidden = false;
+        var buttons = document.querySelectorAll("#smm-lagonave-section .smm-donate-link");
+        for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute("aria-expanded", "true");
+        setTimeout(function () {
+            paymentSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            if (amountInput) amountInput.focus({ preventScroll: true });
+        }, 20);
+    }
+
+    function destroyEmbeddedCheckout() {
+        try {
+            if (embeddedCheckout && typeof embeddedCheckout.destroy === "function") {
+                embeddedCheckout.destroy();
+            }
+        } catch (e) {}
+        embeddedCheckout = null;
+        if (embeddedContainer) {
+            embeddedContainer.innerHTML = "";
+            embeddedContainer.style.display = "none";
+        }
+        if (stripePlaceholder) stripePlaceholder.style.display = "flex";
+        showPaymentMessage("", "");
+    }
+
+    function closeDonationPanel() {
+        if (!paymentSection) return;
+        destroyEmbeddedCheckout();
+        paymentSection.hidden = true;
+        var buttons = document.querySelectorAll("#smm-lagonave-section .smm-donate-link");
+        for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute("aria-expanded", "false");
+    }
+
+    var donationButtons = document.querySelectorAll("#smm-lagonave-section .smm-donate-link");
+    for (var db = 0; db < donationButtons.length; db++) {
+        donationButtons[db].addEventListener("click", openDonationPanel);
+    }
+    if (paymentClose) paymentClose.addEventListener("click", closeDonationPanel);
+
+    function selectedFrequency() {
+        var selected = document.querySelector('#smm-lagonave-section input[name="smm-frequency"]:checked');
+        return selected ? selected.value : "one_time";
+    }
+
+    async function beginStripeCheckout() {
+        var amount = parseFloat(amountInput ? amountInput.value : "0");
+        var frequency = selectedFrequency();
+
+        if (!isFinite(amount) || amount < 1 || amount > 100000) {
+            showPaymentMessage("Please enter a donation amount between $1 and $100,000.", "error");
+            return;
+        }
+
+        if (typeof Stripe === "undefined") {
+            showPaymentMessage("The secure Stripe payment library could not be loaded. Please refresh the page and try again.", "error");
+            return;
+        }
+
+        startPaymentButton.disabled = true;
+        startPaymentButton.textContent = "Loading secure payment…";
+        destroyEmbeddedCheckout();
+        showPaymentMessage("Connecting securely to Stripe…", "info");
+
+        try {
+            var configResponse = await fetch(apiUrl("/stripe-config"), {
+                method: "GET",
+                credentials: "omit"
+            });
+            var config = await configResponse.json();
+            if (!configResponse.ok || !config.publishableKey) {
+                throw new Error(config.error || "Stripe configuration is unavailable.");
+            }
+
+            var stripe = Stripe(config.publishableKey);
+
+            var fetchClientSecret = async function () {
+                var response = await fetch(apiUrl("/create-donation-session"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "omit",
+                    body: JSON.stringify({ amount: amount, frequency: frequency })
+                });
+                var data = await response.json();
+                if (!response.ok || !data.clientSecret) {
+                    throw new Error(data.error || "Unable to start the donation session.");
+                }
+                return data.clientSecret;
+            };
+
+            embeddedCheckout = await stripe.initEmbeddedCheckout({
+                fetchClientSecret: fetchClientSecret
+            });
+
+            if (stripePlaceholder) stripePlaceholder.style.display = "none";
+            if (embeddedContainer) {
+                embeddedContainer.style.display = "block";
+                embeddedCheckout.mount("#smm-embedded-checkout");
+            }
+            showPaymentMessage("", "");
+        } catch (error) {
+            destroyEmbeddedCheckout();
+            showPaymentMessage(error && error.message ? error.message : "Unable to load the secure donation form.", "error");
+        } finally {
+            startPaymentButton.disabled = false;
+            var section = document.getElementById("smm-lagonave-section");
+            var lang = section && section.getAttribute ? section.getAttribute("lang") : "en";
+            startPaymentButton.textContent = translations[lang] && translations[lang].continueSecurely
+                ? translations[lang].continueSecurely
+                : "Continue to Secure Payment";
+        }
+    }
+
+    if (startPaymentButton) startPaymentButton.addEventListener("click", beginStripeCheckout);
+
+    var frequencyInputs = document.querySelectorAll('#smm-lagonave-section input[name="smm-frequency"]');
+    for (var fi = 0; fi < frequencyInputs.length; fi++) {
+        frequencyInputs[fi].addEventListener("change", destroyEmbeddedCheckout);
+    }
+    if (amountInput) amountInput.addEventListener("input", destroyEmbeddedCheckout);
+
+    /* If Stripe returns the donor to this page, verify and show a thank-you message. */
+    (async function verifyReturnedDonation() {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get("donation") !== "success" || !params.get("session_id")) return;
+            openDonationPanel();
+            var response = await fetch(apiUrl("/donation-session-status?session_id=" + encodeURIComponent(params.get("session_id"))), { credentials: "omit" });
+            var data = await response.json();
+            if (response.ok && data.status === "complete") {
+                if (donationBuilder) donationBuilder.style.display = "none";
+                if (paymentSuccess) paymentSuccess.classList.add("smm-visible");
+                window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+            }
+        } catch (e) {}
+    })();
+
+    /* ==========================================================
+       ORIGINAL PAGE IMPORTER
+       - pulls content images into the gallery
+       - uses the first imported photo as the hero background
+       - detects the original donation link
+       - imports additional source-page text when available
+       ========================================================== */
+
+    var gallery = document.getElementById("smm-source-gallery");
+    var galleryStatus = document.getElementById("smm-gallery-status");
+    var hero = document.getElementById("smm-hero");
+    var sourceContent = document.getElementById("smm-source-content");
+
+    function absoluteURL(url) {
+        if (!url) return "";
+        try { return new URL(url, SOURCE_URL).href; }
+        catch (e) { return ""; }
+    }
+
+    function shouldIgnoreImage(url, altText) {
+        var combined = ((url || "") + " " + (altText || "")).toLowerCase();
+        return (
+            combined.indexOf("logo") !== -1 ||
+            combined.indexOf("icon") !== -1 ||
+            combined.indexOf("facebook") !== -1 ||
+            combined.indexOf("instagram") !== -1 ||
+            combined.indexOf("twitter") !== -1 ||
+            combined.indexOf("captcha") !== -1 ||
+            combined.indexOf("recaptcha") !== -1 ||
+            combined.indexOf("tracking") !== -1 ||
+            combined.indexOf("pixel") !== -1 ||
+            combined.indexOf("avatar") !== -1 ||
+            combined.indexOf("paypal") !== -1
+        );
+    }
+
+    function addGalleryImage(url, altText, usedImages) {
+        url = absoluteURL(url);
+        if (!url || usedImages[url] || shouldIgnoreImage(url, altText)) return false;
+
+        usedImages[url] = true;
+        var figure = document.createElement("figure");
+        var image = document.createElement("img");
+        image.src = url;
+        image.alt = altText || "Children of Sainte Madeleine in La Gonâve, Haiti";
+        image.loading = "lazy";
+        figure.appendChild(image);
+
+        if (altText) {
+            var caption = document.createElement("figcaption");
+            caption.textContent = altText;
+            figure.appendChild(caption);
+        }
+
+        gallery.appendChild(figure);
+
+        if (!hero.getAttribute("data-smm-photo-loaded")) {
+            hero.style.backgroundImage =
+                "linear-gradient(90deg, rgba(6,24,39,.94) 0%, rgba(13,43,68,.84) 48%, rgba(17,57,90,.46) 100%), url(\"" +
+                url.replace(/\"/g, "%22") + "\")";
+            hero.setAttribute("data-smm-photo-loaded", "true");
+        }
+
+        return true;
+    }
+
+    function setDonationLink(documentCopy) {
+        var donationURL = "";
+        var anchors = documentCopy.querySelectorAll("a[href]");
+
+        for (var i = 0; i < anchors.length; i++) {
+            var text = (anchors[i].textContent || "").trim().toLowerCase();
+            var href = anchors[i].getAttribute("href") || "";
+            var combined = (text + " " + href).toLowerCase();
+
+            if (
+                combined.indexOf("donate") !== -1 ||
+                combined.indexOf("donation") !== -1 ||
+                combined.indexOf("paypal") !== -1 ||
+                combined.indexOf("online giving") !== -1
+            ) {
+                donationURL = absoluteURL(href);
+                if (donationURL && donationURL !== SOURCE_URL) break;
+            }
+        }
+
+        if (!donationURL) {
+            var forms = documentCopy.querySelectorAll("form[action]");
+            for (var f = 0; f < forms.length; f++) {
+                var formText = (forms[f].textContent || "").toLowerCase();
+                if (formText.indexOf("donate") !== -1 || formText.indexOf("donation") !== -1) {
+                    donationURL = absoluteURL(forms[f].getAttribute("action"));
+                    if (donationURL) break;
+                }
+            }
+        }
+
+        if (!donationURL) donationURL = SOURCE_URL;
+
+        var donationButtons = document.querySelectorAll("#smm-lagonave-section .smm-donate-link");
+        for (var d = 0; d < donationButtons.length; d++) {
+            donationButtons[d].href = donationURL;
+        }
+    }
+
+    function importSourceText(documentCopy) {
+        if (!sourceContent) return;
+
+        var candidates = documentCopy.querySelectorAll("main h1, main h2, main h3, main p, main li, .content h1, .content h2, .content h3, .content p, .content li, article h1, article h2, article h3, article p, article li");
+        var fragment = document.createDocumentFragment();
+        var seen = {};
+        var added = 0;
+
+        for (var i = 0; i < candidates.length && added < 24; i++) {
+            var node = candidates[i];
+            var text = (node.textContent || "").replace(/\s+/g, " ").trim();
+
+            if (!text || text.length < 25 || text.length > 1200) continue;
+            if (text.toLowerCase().indexOf("secretary@stmarys1845.org") !== -1) continue;
+            if (text.toLowerCase().indexOf("admin login") !== -1) continue;
+            if (text.toLowerCase().indexOf("joint norwich catholic cluster") !== -1) continue;
+            if (seen[text]) continue;
+
+            seen[text] = true;
+            var cloneTag = /^(H1|H2|H3|LI)$/.test(node.tagName) ? node.tagName.toLowerCase() : "p";
+            var clone = document.createElement(cloneTag);
+            clone.textContent = text;
+            fragment.appendChild(clone);
+            added++;
+        }
+
+        if (added > 0) {
+            sourceContent.innerHTML = "";
+            sourceContent.appendChild(fragment);
+        } else {
+            sourceContent.innerHTML = '<p class="smm-source-placeholder">For the complete original fund information, <a href="' + SOURCE_URL + '" target="_blank" rel="noopener noreferrer">open the La Gonâve fund page</a>.</p>';
+        }
+    }
+
+    if (typeof fetch === "undefined") return;
+
+    fetch(SOURCE_URL, { credentials: "same-origin" })
+        .then(function (response) {
+            if (!response.ok) throw new Error("Unable to retrieve source page.");
+            return response.text();
+        })
+        .then(function (html) {
+            var parser = new DOMParser();
+            var documentCopy = parser.parseFromString(html, "text/html");
+
+            /* Prevent this redesigned section from importing itself if it is already on the source page. */
+            var selfCopy = documentCopy.querySelector("#smm-lagonave-section");
+            if (selfCopy) selfCopy.remove();
+
+            var excluded = documentCopy.querySelectorAll("header, footer, nav, script, style, noscript");
+            for (var x = 0; x < excluded.length; x++) excluded[x].remove();
+
+            importSourceText(documentCopy);
+
+            var usedImages = {};
+            var addedImages = 0;
+
+            var images = documentCopy.querySelectorAll("img");
+            for (var i = 0; i < images.length; i++) {
+                var img = images[i];
+                var src = img.getAttribute("data-src") || img.getAttribute("data-lazy-src") || img.getAttribute("src");
+                var alt = img.getAttribute("alt") || "";
+                if (addGalleryImage(src, alt, usedImages)) addedImages++;
+            }
+
+            var sources = documentCopy.querySelectorAll("source");
+            for (var s = 0; s < sources.length; s++) {
+                var srcset = sources[s].getAttribute("srcset") || sources[s].getAttribute("data-srcset");
+                if (srcset) {
+                    var firstSource = srcset.split(",")[0].trim().split(" ")[0];
+                    if (addGalleryImage(firstSource, "Sainte Madeleine, La Gonâve, Haiti", usedImages)) addedImages++;
+                }
+            }
+
+            var styled = documentCopy.querySelectorAll("[style]");
+            for (var b = 0; b < styled.length; b++) {
+                var style = styled[b].getAttribute("style") || "";
+                var matches = style.match(/url\(['\"]?([^'\")]+)['\"]?\)/ig);
+                if (!matches) continue;
+
+                for (var m = 0; m < matches.length; m++) {
+                    var cleaned = matches[m].replace(/^url\(['\"]?/i, "").replace(/['\"]?\)$/i, "");
+                    if (addGalleryImage(cleaned, "Sainte Madeleine, La Gonâve, Haiti", usedImages)) addedImages++;
+                }
+            }
+
+            if (galleryStatus) {
+                if (addedImages > 0) {
+                    galleryStatus.remove();
+                } else {
+                    galleryStatus.textContent = "No content photos could be imported automatically. Open the original La Gonâve fund page to verify its current images.";
+                }
+            }
+        })
+        .catch(function () {
+            if (galleryStatus) {
+                galleryStatus.innerHTML = 'The website did not allow the gallery to import automatically. <a href="' + SOURCE_URL + '" target="_blank" rel="noopener noreferrer">View the original La Gonâve fund page and its photos here.</a>';
+            }
+            if (sourceContent) {
+                sourceContent.innerHTML = '<p class="smm-source-placeholder">The original page could not be loaded automatically. <a href="' + SOURCE_URL + '" target="_blank" rel="noopener noreferrer">Open the original fund page</a> for the complete source information.</p>';
+            }
+        });
+})();
+</script>
