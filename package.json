@@ -1,13 +1,17 @@
 {
-  "name": "jncc-lagonave-stripe-donations",
-  "version": "1.0.0",
+  "name": "st-mary-stripe-donations",
+  "version": "2.0.0",
   "private": true,
+  "description": "Stripe donation and event-space reservation backend for St. Mary Church / JNCC",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^5.1.0",
+    "luxon": "^3.7.2",
+    "nodemailer": "^7.0.6",
+    "pg": "^8.16.3",
     "stripe": "^18.5.0"
   }
 }
