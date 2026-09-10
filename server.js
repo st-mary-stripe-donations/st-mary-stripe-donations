@@ -3,7 +3,7 @@
  * - Existing La Gonâve donation endpoints are preserved.
  * - Event-space reservation workflow adds:
  *   $50 deposit, saved off-session payment method, staff availability approval,
- *   $300 scheduled balance charge, cancellation, and approved $50 refund.
+ *   dynamic reservation-fee charge ($300 first day + $100/additional day), cancellation, and approved $50 refund.
  */
 const express = require('express');
 const Stripe = require('stripe');
@@ -65,6 +65,9 @@ function ensureSchema() {
         end_date DATE NOT NULL,
         start_time TIME NOT NULL,
         end_time TIME NOT NULL,
+        reservation_occurrences JSONB NOT NULL DEFAULT '[]'::jsonb,
+        reserved_day_count INTEGER NOT NULL DEFAULT 1,
+        reservation_fee_cents INTEGER NOT NULL DEFAULT 30000,
         event_start_at TIMESTAMPTZ NOT NULL,
         event_end_at TIMESTAMPTZ NOT NULL,
         additional_info TEXT,
@@ -90,6 +93,9 @@ function ensureSchema() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+      ALTER TABLE reservations ADD COLUMN IF NOT EXISTS reservation_occurrences JSONB NOT NULL DEFAULT '[]'::jsonb;
+      ALTER TABLE reservations ADD COLUMN IF NOT EXISTS reserved_day_count INTEGER NOT NULL DEFAULT 1;
+      ALTER TABLE reservations ADD COLUMN IF NOT EXISTS reservation_fee_cents INTEGER NOT NULL DEFAULT 30000;
       CREATE INDEX IF NOT EXISTS reservations_due_balance_idx ON reservations(status, balance_charge_at);
       CREATE INDEX IF NOT EXISTS reservations_refund_review_idx ON reservations(event_end_at, deposit_refunded_at);
     `);
@@ -148,7 +154,53 @@ function escapeHtml(value) {
 }
 function clean(value, max = 500) { return String(value == null ? '' : value).trim().slice(0, max); }
 function validEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); }
-function money(cents) { return '$' + (cents / 100).toFixed(2); }
+function money(cents) { return '$' + (Number(cents || 0) / 100).toFixed(2); }
+function reservationFeeCents(dayCount) {
+  const days = Math.max(1, Number(dayCount || 1));
+  return 30000 + Math.max(0, days - 1) * 10000;
+}
+function parseReservationOccurrences(value) {
+  if (!Array.isArray(value) || !value.length) throw new Error('Please select at least one reservation date.');
+  if (value.length > 366) throw new Error('A reservation can include up to 366 selected dates.');
+  const today = DateTime.now().setZone('America/New_York').startOf('day');
+  const seenDates = new Set();
+  const occurrences = [];
+  for (const raw of value) {
+    const date = clean(raw && raw.date, 10);
+    const startTime = clean(raw && raw.startTime, 5);
+    const endTime = clean(raw && raw.endTime, 5);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(startTime) || !/^\d{2}:\d{2}$/.test(endTime)) {
+      throw new Error('Each selected date must include a valid date, start time, and end time.');
+    }
+    if (seenDates.has(date)) throw new Error(`The date ${date} was selected more than once. Please use one time range per reserved day.`);
+    const start = DateTime.fromISO(`${date}T${startTime}`, { zone: 'America/New_York' });
+    const end = DateTime.fromISO(`${date}T${endTime}`, { zone: 'America/New_York' });
+    if (!start.isValid || !end.isValid || end <= start) throw new Error(`Please enter a valid start and end time for ${date}.`);
+    if (start.startOf('day') < today) throw new Error('All reservation dates must be today or later.');
+    seenDates.add(date);
+    occurrences.push({ date, startTime, endTime, startAt: start, endAt: end });
+  }
+  occurrences.sort((a, b) => a.startAt.toMillis() - b.startAt.toMillis());
+  return occurrences;
+}
+function getReservationOccurrences(r) {
+  let items = r && r.reservation_occurrences;
+  if (typeof items === 'string') { try { items = JSON.parse(items); } catch (_) { items = []; } }
+  if (Array.isArray(items) && items.length) {
+    return items.map(o => ({ date: String(o.date || ''), startTime: String(o.startTime || ''), endTime: String(o.endTime || '') }))
+      .filter(o => o.date && o.startTime && o.endTime);
+  }
+  if (r && r.start_date && r.start_time) {
+    return [{ date: String(r.start_date).slice(0, 10), startTime: String(r.start_time).slice(0, 5), endTime: String(r.end_time || '').slice(0, 5) }];
+  }
+  return [];
+}
+function scheduleHtml(r) {
+  const items = getReservationOccurrences(r);
+  if (!items.length) return 'No schedule available';
+  return '<ol style="margin:0;padding-left:20px">' + items.map(o => `<li style="margin:0 0 5px">${escapeHtml(formatDate(o.date))} &mdash; ${escapeHtml(formatTime(o.startTime))} to ${escapeHtml(formatTime(o.endTime))}</li>`).join('') + '</ol>';
+}
+function feeForReservation(r) { return Number(r && r.reservation_fee_cents) || reservationFeeCents(r && r.reserved_day_count); }
 function base64urlJson(obj) { return Buffer.from(JSON.stringify(obj)).toString('base64url'); }
 function signToken(payload) {
   const body = base64urlJson(payload);
@@ -172,6 +224,7 @@ function htmlButton(url, label, color = '#173f5f') {
   return `<a href="${escapeHtml(url)}" style="display:inline-block;background:${color};color:#fff;text-decoration:none;padding:12px 18px;border-radius:7px;font-weight:700;margin:6px 6px 6px 0">${escapeHtml(label)}</a>`;
 }
 function reservationRows(r) {
+  const days = Number(r.reserved_day_count || getReservationOccurrences(r).length || 1);
   return `
     <table style="border-collapse:collapse;width:100%;max-width:680px">
       ${row('Reservation ID', r.id)}
@@ -181,10 +234,14 @@ function reservationRows(r) {
       ${row('Parish Hall', r.location)}
       ${row('Event Type', r.event_type)}
       ${row('Estimated Guests', r.guest_count)}
-      ${row('Starting Date / Time', `${formatDate(r.start_date)} at ${formatTime(r.start_time)}`)}
-      ${row('Ending Date / Time', `${formatDate(r.end_date)} at ${formatTime(r.end_time)}`)}
+      ${row('Reserved Days', days)}
+      ${rowHtml('Reservation Schedule', scheduleHtml(r))}
+      ${row('Reservation Fee', `${money(feeForReservation(r))} ($300 first day + $100 each additional day)`)}
       ${row('Additional Information', r.additional_info || 'None')}
     </table>`;
+}
+function rowHtml(label, html) {
+  return `<tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f6f8fa;vertical-align:top">${escapeHtml(label)}</td><td style="padding:8px;border:1px solid #ddd">${html}</td></tr>`;
 }
 function row(label, value) {
   return `<tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f6f8fa;vertical-align:top">${escapeHtml(label)}</td><td style="padding:8px;border:1px solid #ddd">${escapeHtml(value)}</td></tr>`;
@@ -274,29 +331,35 @@ app.post('/create-reservation-session', async (req,res) => {
     const data = {
       firstName: clean(req.body.firstName,100), lastName: clean(req.body.lastName,100), email: clean(req.body.email,250).toLowerCase(), phone: clean(req.body.phone,80),
       location: clean(req.body.location,150), eventType: clean(req.body.eventType,120), guestCount: Number(req.body.guestCount),
-      startDate: clean(req.body.startDate,10), endDate: clean(req.body.endDate,10), startTime: clean(req.body.startTime,5), endTime: clean(req.body.endTime,5),
       additionalInfo: clean(req.body.additionalInfo,3000), authorization: req.body.authorization === true
     };
-    if (!data.firstName || !data.lastName || !validEmail(data.email) || !data.phone || !data.location || !data.eventType || !Number.isInteger(data.guestCount) || data.guestCount < 1 || !data.startDate || !data.endDate || !data.startTime || !data.endTime || !data.authorization) {
+    if (!data.firstName || !data.lastName || !validEmail(data.email) || !data.phone || !data.location || !data.eventType || !Number.isInteger(data.guestCount) || data.guestCount < 1 || !data.authorization) {
       return res.status(400).json({error:'Please complete all required reservation fields and accept the payment authorization.'});
     }
-    const startAt = DateTime.fromISO(`${data.startDate}T${data.startTime}`, {zone:'America/New_York'});
-    const endAt = DateTime.fromISO(`${data.endDate}T${data.endTime}`, {zone:'America/New_York'});
-    if (!startAt.isValid || !endAt.isValid || endAt <= startAt) return res.status(400).json({error:'Please enter a valid event start and end date/time.'});
-    if (startAt < DateTime.now().setZone('America/New_York').startOf('day')) return res.status(400).json({error:'The event date must be in the future.'});
+    let occurrences;
+    try { occurrences = parseReservationOccurrences(req.body.occurrences); }
+    catch (e) { return res.status(400).json({ error: e.message }); }
+
+    const firstOccurrence = occurrences[0];
+    const lastOccurrence = occurrences[occurrences.length - 1];
+    const dayCount = occurrences.length;
+    const feeCents = reservationFeeCents(dayCount);
+    const storedOccurrences = occurrences.map(o => ({ date:o.date, startTime:o.startTime, endTime:o.endTime }));
 
     const id = crypto.randomUUID();
     await pool.query(`INSERT INTO reservations
-      (id,first_name,last_name,email,phone,location,event_type,guest_count,start_date,end_date,start_time,end_time,event_start_at,event_end_at,additional_info,authorization_accepted)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,TRUE)`,
-      [id,data.firstName,data.lastName,data.email,data.phone,data.location,data.eventType,data.guestCount,data.startDate,data.endDate,data.startTime,data.endTime,startAt.toUTC().toJSDate(),endAt.toUTC().toJSDate(),data.additionalInfo]);
+      (id,first_name,last_name,email,phone,location,event_type,guest_count,start_date,end_date,start_time,end_time,reservation_occurrences,reserved_day_count,reservation_fee_cents,event_start_at,event_end_at,additional_info,authorization_accepted)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13::jsonb,$14,$15,$16,$17,$18,TRUE)`,
+      [id,data.firstName,data.lastName,data.email,data.phone,data.location,data.eventType,data.guestCount,
+       firstOccurrence.date,lastOccurrence.date,firstOccurrence.startTime,lastOccurrence.endTime,JSON.stringify(storedOccurrences),dayCount,feeCents,
+       firstOccurrence.startAt.toUTC().toJSDate(),lastOccurrence.endAt.toUTC().toJSDate(),data.additionalInfo]);
 
     const session = await stripe.checkout.sessions.create({
       ui_mode:'embedded', mode:'payment', customer_creation:'always', customer_email:data.email,
       payment_method_types:['card'], billing_address_collection:'auto',
       line_items:[{quantity:1,price_data:{currency:'usd',unit_amount:5000,product_data:{name:'Event Space Refundable Security Deposit',description:'$50 refundable security deposit for a parish event-space reservation request.'}}}],
-      payment_intent_data:{ setup_future_usage:'off_session', metadata:{workflow:'event_space_reservation',reservation_id:id,payment_type:'deposit'} },
-      metadata:{workflow:'event_space_reservation',reservation_id:id},
+      payment_intent_data:{ setup_future_usage:'off_session', metadata:{workflow:'event_space_reservation',reservation_id:id,payment_type:'deposit',reserved_day_count:String(dayCount),reservation_fee_cents:String(feeCents)} },
+      metadata:{workflow:'event_space_reservation',reservation_id:id,reserved_day_count:String(dayCount),reservation_fee_cents:String(feeCents)},
       return_url:buildReservationReturnUrl(), redirect_on_completion:'always'
     });
     await pool.query('UPDATE reservations SET stripe_checkout_session_id=$1, updated_at=NOW() WHERE id=$2',[session.id,id]);
@@ -350,7 +413,7 @@ async function sendInitialReservationEmails(r) {
   await sendMail({
     to:r.email, replyTo:staffEmail,
     subject:'Event Space Reservation Request Received',
-    html:`<h2>We received your event-space reservation request</h2><p>Thank you, ${escapeHtml(r.first_name)}. Your <strong>$50 refundable security deposit</strong> was received. The hall is not yet confirmed; parish staff will review availability and send you another email.</p>${reservationRows(r)}<p>${htmlButton(cancelUrl,'Review / Cancel Request','#8a2e2e')}</p><p>If you cancel before the scheduled $300 charge, the automatic $300 charge will not be processed.</p>`
+    html:`<h2>We received your event-space reservation request</h2><p>Thank you, ${escapeHtml(r.first_name)}. Your <strong>$50 refundable security deposit</strong> was received. The hall is not yet confirmed; parish staff will review availability and send you another email.</p>${reservationRows(r)}<p>${htmlButton(cancelUrl,'Review / Cancel Request','#8a2e2e')}</p><p>If you cancel before the scheduled reservation-fee charge, that automatic charge will not be processed.</p>`
   });
   await sendMail({
     to:staffEmail, replyTo:r.email,
@@ -393,7 +456,7 @@ app.post('/admin/reservation-review', express.urlencoded({extended:false}), asyn
       return res.send(simplePage('Availability confirmed','The renter was emailed and the reservation is confirmed.'));
     }
     if(action==='decline'){
-      if(r.balance_paid_at) return res.send(simplePage('Cannot decline automatically','The $300 balance has already been charged. Please handle this reservation manually.'));
+      if(r.balance_paid_at) return res.send(simplePage('Cannot decline automatically','The reservation fee has already been charged. Please handle this reservation manually.'));
       const upd=await pool.query(`UPDATE reservations SET status='declined',updated_at=NOW() WHERE id=$1 RETURNING *`,[r.id]);
       r=upd.rows[0];
       if(r.deposit_payment_intent_id && !r.deposit_refunded_at){
@@ -415,7 +478,7 @@ async function sendAvailabilityConfirmedEmail(r){
   const cancelToken=createActionToken(r.id,'cancel');
   const cancelUrl=`${publicBackendUrl}/reservation/cancel?token=${encodeURIComponent(cancelToken)}`;
   const chargeDate=DateTime.fromJSDate(new Date(r.balance_charge_at),{zone:'America/New_York'}).toFormat('LLLL d, yyyy');
-  await sendMail({to:r.email,replyTo:staffEmail,subject:'Your Event Space Reservation Is Confirmed',html:`<h2>Your event space is confirmed</h2><p>Good news, ${escapeHtml(r.first_name)}. Parish staff confirmed availability for your requested space.</p>${reservationRows(r)}<p>The <strong>$300 reservation fee</strong> is scheduled to be charged to the payment method used for your deposit on <strong>${escapeHtml(chargeDate)}</strong>.</p><p>${htmlButton(cancelUrl,'Review / Cancel Reservation','#8a2e2e')}</p><p>If you cancel before the scheduled $300 charge is processed, that automatic charge will not be made.</p>`});
+  await sendMail({to:r.email,replyTo:staffEmail,subject:'Your Event Space Reservation Is Confirmed',html:`<h2>Your event space is confirmed</h2><p>Good news, ${escapeHtml(r.first_name)}. Parish staff confirmed availability for your requested space.</p>${reservationRows(r)}<p>The <strong>${escapeHtml(money(feeForReservation(r)))} reservation fee</strong> is scheduled to be charged to the payment method used for your deposit on <strong>${escapeHtml(chargeDate)}</strong>.</p><p>The fee is $300 for the first reserved day plus $100 for each additional reserved day.</p><p>${htmlButton(cancelUrl,'Review / Cancel Reservation','#8a2e2e')}</p><p>If you cancel before the scheduled reservation-fee charge is processed, that automatic charge will not be made.</p>`});
 }
 
 // ----------------------------
@@ -427,7 +490,7 @@ app.get('/reservation/cancel', async (req,res) => {
     const token=String(req.query.token||''); const payload=verifyActionToken(token,'cancel');
     const result=await pool.query('SELECT * FROM reservations WHERE id=$1',[payload.reservationId]); if(!result.rows.length)return res.status(404).send('Reservation not found.');
     const r=result.rows[0];
-    res.send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cancel Reservation</title>${pageCss()}</head><body><main><h1>Cancel Reservation</h1>${reservationRows(r)}<p><strong>Status:</strong> ${escapeHtml(r.status)}</p>${r.balance_paid_at?'<p class="warning">The $300 fee has already been charged. Online cancellation will notify the parish, but any refund requires parish review.</p>':'<p>If you confirm cancellation before the scheduled $300 charge, the automatic $300 charge will be stopped.</p>'}<form method="post" action="/reservation/cancel"><input type="hidden" name="token" value="${escapeHtml(token)}"><button class="danger" name="action" value="cancel">Confirm Cancellation</button></form></main></body></html>`);
+    res.send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cancel Reservation</title>${pageCss()}</head><body><main><h1>Cancel Reservation</h1>${reservationRows(r)}<p><strong>Status:</strong> ${escapeHtml(r.status)}</p>${r.balance_paid_at?`<p class="warning">The ${escapeHtml(money(feeForReservation(r)))} reservation fee has already been charged. Online cancellation will notify the parish, but any refund requires parish review.</p>`:'<p>If you confirm cancellation before the scheduled reservation-fee charge, that automatic charge will be stopped.</p>'}<form method="post" action="/reservation/cancel"><input type="hidden" name="token" value="${escapeHtml(token)}"><button class="danger" name="action" value="cancel">Confirm Cancellation</button></form></main></body></html>`);
   }catch(error){res.status(400).send(simplePage('Invalid or expired cancellation link',error.message));}
 });
 
@@ -447,9 +510,9 @@ app.post('/reservation/cancel', express.urlencoded({extended:false}), async (req
       const refund=await stripe.refunds.create({payment_intent:r.deposit_payment_intent_id,amount:5000},{idempotencyKey:`reservation-${r.id}-early-cancel-deposit-refund`});
       await pool.query('UPDATE reservations SET deposit_refund_id=$1,deposit_refunded_at=NOW(),updated_at=NOW() WHERE id=$2',[refund.id,r.id]); depositRefunded=true;
     }
-    await sendMail({to:staffEmail,replyTo:r.email,subject:`Reservation Canceled — ${r.first_name} ${r.last_name}`,html:`<h2>Reservation canceled by renter</h2>${reservationRows(r)}<p>The reservation has been marked canceled. ${r.balance_paid_at?'The $300 balance had already been charged and requires parish review.':'The future $300 automatic charge has been stopped.'}</p><p>${depositRefunded?'The $50 deposit was automatically refunded because the cancellation was more than 14 days before the event.':'The $50 deposit was not automatically refunded under the more-than-14-days rule.'}</p>`});
-    await sendMail({to:r.email,replyTo:staffEmail,subject:'Your Event Space Reservation Was Canceled',html:`<h2>Your reservation has been canceled</h2><p>${r.balance_paid_at?'The $300 reservation fee had already been processed. The parish office will review any applicable refund.':'The scheduled $300 automatic charge has been stopped.'}</p><p>${depositRefunded?'Your $50 deposit has been submitted for refund to the original payment method.':'Any refund of the $50 deposit is subject to the parish cancellation policy.'}</p>`});
-    res.send(simplePage('Reservation canceled',r.balance_paid_at?'The parish office has been notified.':'The scheduled $300 charge has been stopped.'));
+    await sendMail({to:staffEmail,replyTo:r.email,subject:`Reservation Canceled — ${r.first_name} ${r.last_name}`,html:`<h2>Reservation canceled by renter</h2>${reservationRows(r)}<p>The reservation has been marked canceled. ${r.balance_paid_at?'The reservation fee had already been charged and requires parish review.':'The future reservation-fee automatic charge has been stopped.'}</p><p>${depositRefunded?'The $50 deposit was automatically refunded because the cancellation was more than 14 days before the event.':'The $50 deposit was not automatically refunded under the more-than-14-days rule.'}</p>`});
+    await sendMail({to:r.email,replyTo:staffEmail,subject:'Your Event Space Reservation Was Canceled',html:`<h2>Your reservation has been canceled</h2><p>${r.balance_paid_at?'The reservation fee had already been processed. The parish office will review any applicable refund.':'The scheduled reservation-fee automatic charge has been stopped.'}</p><p>${depositRefunded?'Your $50 deposit has been submitted for refund to the original payment method.':'Any refund of the $50 deposit is subject to the parish cancellation policy.'}</p>`});
+    res.send(simplePage('Reservation canceled',r.balance_paid_at?'The parish office has been notified.':'The scheduled reservation-fee charge has been stopped.'));
   }catch(error){console.error('Cancellation error:',error);res.status(400).send(simplePage('Unable to cancel reservation',error.message));}
 });
 
@@ -475,15 +538,16 @@ async function chargeReservationBalance(id){
   if(r.balance_paid_at) return r;
   if(!r.stripe_customer_id || !r.stripe_payment_method_id) throw new Error('Saved Stripe payment method is missing.');
   try{
-    const pi=await stripe.paymentIntents.create({amount:30000,currency:'usd',customer:r.stripe_customer_id,payment_method:r.stripe_payment_method_id,off_session:true,confirm:true,description:'Parish event-space reservation fee',metadata:{workflow:'event_space_reservation',reservation_id:r.id,payment_type:'reservation_fee'}},{idempotencyKey:`reservation-${r.id}-balance-300`});
+    const feeCents=feeForReservation(r);
+    const pi=await stripe.paymentIntents.create({amount:feeCents,currency:'usd',customer:r.stripe_customer_id,payment_method:r.stripe_payment_method_id,off_session:true,confirm:true,description:`Parish event-space reservation fee - ${r.reserved_day_count || 1} reserved day(s)`,metadata:{workflow:'event_space_reservation',reservation_id:r.id,payment_type:'reservation_fee',reserved_day_count:String(r.reserved_day_count || 1),reservation_fee_cents:String(feeCents)}},{idempotencyKey:`reservation-${r.id}-balance-${feeCents}`});
     const upd=await pool.query(`UPDATE reservations SET balance_payment_intent_id=$1,balance_paid_at=NOW(),status='balance_paid',charge_failure_at=NULL,charge_failure_message=NULL,updated_at=NOW() WHERE id=$2 RETURNING *`,[pi.id,r.id]); r=upd.rows[0];
-    await sendMail({to:r.email,replyTo:staffEmail,subject:'$300 Event Space Reservation Fee Charged',html:`<h2>Your $300 reservation fee was processed</h2><p>The scheduled $300 reservation fee for your confirmed event was successfully charged to the saved payment method.</p>${reservationRows(r)}<p>Your $50 security deposit remains refundable according to the rental agreement. After the event, parish staff will review the space and can approve the deposit refund.</p>`});
-    await sendMail({to:staffEmail,replyTo:r.email,subject:`$300 Reservation Fee Charged — ${r.first_name} ${r.last_name}`,html:`<h2>$300 reservation fee successfully charged</h2>${reservationRows(r)}<p>The $50 security deposit remains held until the post-event refund review.</p>`});
+    await sendMail({to:r.email,replyTo:staffEmail,subject:`${money(feeCents)} Event Space Reservation Fee Charged`,html:`<h2>Your ${escapeHtml(money(feeCents))} reservation fee was processed</h2><p>The scheduled reservation fee for your confirmed event was successfully charged to the saved payment method.</p>${reservationRows(r)}<p>Your $50 security deposit remains refundable according to the rental agreement. After the final reserved date, parish staff will review the space and can approve the deposit refund.</p>`});
+    await sendMail({to:staffEmail,replyTo:r.email,subject:`${money(feeCents)} Reservation Fee Charged — ${r.first_name} ${r.last_name}`,html:`<h2>${escapeHtml(money(feeCents))} reservation fee successfully charged</h2>${reservationRows(r)}<p>The $50 security deposit remains held until the post-event refund review after the final reserved date.</p>`});
     return r;
   }catch(error){
     await pool.query(`UPDATE reservations SET charge_failure_at=NOW(),charge_failure_message=$1,updated_at=NOW() WHERE id=$2`,[String(error.message||error).slice(0,1000),r.id]);
-    await sendMail({to:staffEmail,replyTo:r.email,subject:`ACTION REQUIRED: $300 Reservation Charge Failed — ${r.first_name} ${r.last_name}`,html:`<h2>The scheduled $300 charge failed</h2>${reservationRows(r)}<p><strong>Error:</strong> ${escapeHtml(error.message||'Unknown Stripe error')}</p><p>Please contact the renter to resolve payment before the event.</p>`});
-    await sendMail({to:r.email,replyTo:staffEmail,subject:'Action Needed for Your Event Space Reservation Payment',html:`<h2>We could not process the scheduled $300 reservation fee</h2><p>Please contact the parish office at ${escapeHtml(staffEmail)} so the payment can be resolved and your reservation remains in good standing.</p>`});
+    await sendMail({to:staffEmail,replyTo:r.email,subject:`ACTION REQUIRED: ${money(feeForReservation(r))} Reservation Charge Failed — ${r.first_name} ${r.last_name}`,html:`<h2>The scheduled ${escapeHtml(money(feeForReservation(r)))} reservation-fee charge failed</h2>${reservationRows(r)}<p><strong>Error:</strong> ${escapeHtml(error.message||'Unknown Stripe error')}</p><p>Please contact the renter to resolve payment before the event.</p>`});
+    await sendMail({to:r.email,replyTo:staffEmail,subject:'Action Needed for Your Event Space Reservation Payment',html:`<h2>We could not process the scheduled ${escapeHtml(money(feeForReservation(r)))} reservation fee</h2><p>Please contact the parish office at ${escapeHtml(staffEmail)} so the payment can be resolved and your reservation remains in good standing.</p>`});
     throw error;
   }
 }
