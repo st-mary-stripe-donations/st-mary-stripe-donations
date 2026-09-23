@@ -29,6 +29,16 @@ const publicBackendUrl = (process.env.PUBLIC_BACKEND_URL || 'https://st-mary-str
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://www.jnccfaith.org,https://jnccfaith.org')
   .split(',').map(v => v.trim()).filter(Boolean);
 
+const donationFundId = 'parroise_st_marie_madleine_lagonave';
+const donationCampaignName = 'La Gonave Children Fund';
+const donationStatsCacheMs = 45 * 1000;
+
+let donationStatsCache = {
+  expiresAt: 0,
+  data: null,
+  promise: null
+};
+
 if (!stripeSecretKey || !stripePublishableKey || !databaseUrl || !actionSecret) {
   console.error('Missing required STRIPE keys, DATABASE_URL, or ACTION_SECRET.');
   process.exit(1);
@@ -122,6 +132,18 @@ app.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (re
         await finalizeDepositSession(session.id);
       }
     }
+
+    if (
+      event.type === 'checkout.session.completed' ||
+      event.type === 'invoice.paid' ||
+      event.type === 'invoice.payment_failed' ||
+      event.type === 'customer.subscription.updated' ||
+      event.type === 'customer.subscription.deleted'
+    ) {
+      donationStatsCache.expiresAt = 0;
+      donationStatsCache.data = null;
+    }
+
     res.json({ received: true });
   } catch (err) {
     console.error('Stripe webhook processing error:', err);
@@ -301,8 +323,8 @@ app.post('/create-donation-session', async (req, res) => {
     if (!allowedFrequencies.has(frequency)) return res.status(400).json({ error:'Invalid donation frequency.' });
     const amountCents = Math.round(amount * 100);
     const recurringIntervals = { weekly:'week', monthly:'month', yearly:'year' };
-    const metadata = { fund:'parroise_st_marie_madleine_lagonave', campaign:'La Gonave Children Fund', frequency };
-    const priceData = { currency:'usd', unit_amount:amountCents, product_data:{ name:'La Gonâve Children Fund Donation', description:'Support for the children of Sainte Madeleine Parish in La Gonâve, Haiti.', metadata:{ fund:'parroise_st_marie_madleine_lagonave' } } };
+    const metadata = { fund:donationFundId, campaign:donationCampaignName, frequency };
+    const priceData = { currency:'usd', unit_amount:amountCents, product_data:{ name:'La Gonâve Children Fund Donation', description:'Support for the children of Sainte Madeleine Parish in La Gonâve, Haiti.', metadata:{ fund:donationFundId } } };
     const sessionParams = { ui_mode:'embedded', mode:frequency === 'one_time' ? 'payment' : 'subscription', line_items:[{price_data:priceData,quantity:1}], payment_method_types:['card'], billing_address_collection:'auto', return_url:buildDonationReturnUrl(), redirect_on_completion:'always', metadata };
     if (frequency === 'one_time') { sessionParams.customer_creation='always'; sessionParams.payment_intent_data={metadata}; }
     else { priceData.recurring={interval:recurringIntervals[frequency],interval_count:1}; sessionParams.subscription_data={metadata}; }
@@ -319,6 +341,161 @@ app.get('/donation-session-status', async (req,res) => {
     const session=await stripe.checkout.sessions.retrieve(sessionId,{expand:['payment_intent','subscription']});
     res.json({status:session.status,paymentStatus:session.payment_status,mode:session.mode,subscriptionStatus:session.subscription && typeof session.subscription !== 'string' ? session.subscription.status : null});
   } catch(error){console.error('Stripe donation status error:',error);res.status(500).json({error:'Unable to verify the donation session.'});}
+});
+
+
+// ----------------------------
+// PUBLIC LA GONÂVE DONATION STATISTICS
+// ----------------------------
+// Returns aggregate campaign information only. No donor names, email addresses,
+// card details, Stripe secret keys, or individual transaction identifiers are exposed.
+//
+// Total Donations Received is the gross amount of successful payments processed
+// through this La Gonâve Checkout flow before Stripe processing fees. One-time gifts
+// are counted from paid Checkout Sessions. Recurring gifts are counted from every
+// paid invoice belonging to subscriptions created by this page.
+
+function donationDayKey(unixSeconds) {
+  const seconds = Number(unixSeconds || 0);
+  if (!Number.isFinite(seconds) || seconds <= 0) return '';
+  const date = DateTime.fromSeconds(seconds, { zone: 'utc' });
+  return date.isValid ? date.toISODate() : '';
+}
+
+function buildDonationTimeline(payments, days = 30) {
+  const today = DateTime.utc().startOf('day');
+  const amountByDate = new Map();
+
+  for (const payment of payments) {
+    const key = donationDayKey(payment.paidAt);
+    if (!key) continue;
+    amountByDate.set(key, (amountByDate.get(key) || 0) + Number(payment.amountCents || 0));
+  }
+
+  const timeline = [];
+  for (let offset = days - 1; offset >= 0; offset--) {
+    const day = today.minus({ days: offset });
+    const key = day.toISODate();
+
+    timeline.push({
+      date: key,
+      amount: Number(((amountByDate.get(key) || 0) / 100).toFixed(2))
+    });
+  }
+
+  return timeline;
+}
+
+async function calculateDonationStats() {
+  const payments = [];
+  const subscriptionIds = new Set();
+
+  // Auto-pagination is handled by the Stripe Node SDK. Only Checkout Sessions
+  // carrying this page's fund metadata are included.
+  for await (const session of stripe.checkout.sessions.list({ limit: 100 })) {
+    if (!session.metadata || session.metadata.fund !== donationFundId) continue;
+
+    if (
+      session.mode === 'payment' &&
+      session.payment_status === 'paid' &&
+      Number(session.amount_total || 0) > 0
+    ) {
+      payments.push({
+        amountCents: Number(session.amount_total || 0),
+        paidAt: Number(session.created || 0)
+      });
+      continue;
+    }
+
+    if (session.mode === 'subscription' && session.subscription) {
+      const subscriptionId =
+        typeof session.subscription === 'string'
+          ? session.subscription
+          : session.subscription.id;
+
+      if (subscriptionId) subscriptionIds.add(subscriptionId);
+    }
+  }
+
+  // Count every successfully paid recurring invoice, including future renewals.
+  for (const subscriptionId of subscriptionIds) {
+    for await (const invoice of stripe.invoices.list({
+      subscription: subscriptionId,
+      status: 'paid',
+      limit: 100
+    })) {
+      if (!invoice.paid || Number(invoice.amount_paid || 0) <= 0) continue;
+
+      const paidAt =
+        invoice.status_transitions && invoice.status_transitions.paid_at
+          ? invoice.status_transitions.paid_at
+          : invoice.created;
+
+      payments.push({
+        amountCents: Number(invoice.amount_paid || 0),
+        paidAt: Number(paidAt || invoice.created || 0)
+      });
+    }
+  }
+
+  payments.sort((a, b) => a.paidAt - b.paidAt);
+
+  const totalCents = payments.reduce(
+    (sum, payment) => sum + Number(payment.amountCents || 0),
+    0
+  );
+
+  return {
+    campaign: donationCampaignName,
+    fund: donationFundId,
+    currency: 'usd',
+    totalReceived: Number((totalCents / 100).toFixed(2)),
+    paymentCount: payments.length,
+    timelineDays: 30,
+    timeline: buildDonationTimeline(payments, 30),
+    asOf: new Date().toISOString(),
+    basis: 'gross_successful_payments_before_processing_fees'
+  };
+}
+
+async function getDonationStats() {
+  const now = Date.now();
+
+  if (donationStatsCache.data && donationStatsCache.expiresAt > now) {
+    return donationStatsCache.data;
+  }
+
+  if (donationStatsCache.promise) {
+    return donationStatsCache.promise;
+  }
+
+  donationStatsCache.promise = calculateDonationStats()
+    .then(data => {
+      donationStatsCache.data = data;
+      donationStatsCache.expiresAt = Date.now() + donationStatsCacheMs;
+      return data;
+    })
+    .finally(() => {
+      donationStatsCache.promise = null;
+    });
+
+  return donationStatsCache.promise;
+}
+
+app.get('/donation-stats', async (req,res) => {
+  if (!originAllowed(req)) return res.status(403).json({error:'Origin not allowed.'});
+
+  try {
+    const data = await getDonationStats();
+
+    // The browser can re-use the public aggregate briefly, while the server-side
+    // cache avoids repeatedly scanning Stripe on every website visit.
+    res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+    res.json(data);
+  } catch (error) {
+    console.error('Stripe donation stats error:', error);
+    res.status(500).json({error:'Unable to load donation statistics.'});
+  }
 });
 
 // ----------------------------
@@ -600,7 +777,7 @@ function pageCss(){return `<style>body{font-family:Arial,sans-serif;background:#
 function simplePage(title,message){return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title>${pageCss()}</head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message||'')}</p></main></body></html>`;}
 
 app.get('/health', async (_req,res) => {
-  try{await ensureSchema();res.json({ok:true,reservations:true});}catch(e){res.status(500).json({ok:false,error:'Database unavailable'});}
+  try{await ensureSchema();res.json({ok:true,reservations:true,donationStats:true});}catch(e){res.status(500).json({ok:false,error:'Database unavailable'});}
 });
 
 const port=process.env.PORT||4242;
