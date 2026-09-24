@@ -389,35 +389,52 @@ function buildDonationTimeline(payments, days = 30) {
 async function calculateDonationStats() {
   const payments = [];
   const subscriptionIds = new Set();
+  const initialSubscriptionInvoiceIds = new Set();
 
   // Auto-pagination is handled by the Stripe Node SDK. Only Checkout Sessions
   // carrying this page's fund metadata are included.
   for await (const session of stripe.checkout.sessions.list({ limit: 100 })) {
     if (!session.metadata || session.metadata.fund !== donationFundId) continue;
 
+    const amountTotal = Number(session.amount_total || 0);
+    const sessionPaid = session.payment_status === 'paid' && amountTotal > 0;
+
+    // Count the payment collected at Checkout for BOTH one-time gifts and the
+    // first payment of a new subscription. This makes the public total update
+    // immediately when Stripe shows a successful "Subscription creation" payment.
     if (
-      session.mode === 'payment' &&
-      session.payment_status === 'paid' &&
-      Number(session.amount_total || 0) > 0
+      (session.mode === 'payment' || session.mode === 'subscription') &&
+      sessionPaid
     ) {
       payments.push({
-        amountCents: Number(session.amount_total || 0),
-        paidAt: Number(session.created || 0)
+        amountCents: amountTotal,
+        paidAt: Number(session.created || 0),
+        source: session.mode === 'subscription'
+          ? 'subscription_initial_checkout'
+          : 'one_time_checkout'
       });
-      continue;
     }
 
-    if (session.mode === 'subscription' && session.subscription) {
+    if (session.mode === 'subscription') {
       const subscriptionId =
         typeof session.subscription === 'string'
           ? session.subscription
-          : session.subscription.id;
+          : session.subscription && session.subscription.id;
 
       if (subscriptionId) subscriptionIds.add(subscriptionId);
+
+      const initialInvoiceId =
+        typeof session.invoice === 'string'
+          ? session.invoice
+          : session.invoice && session.invoice.id;
+
+      if (initialInvoiceId) initialSubscriptionInvoiceIds.add(initialInvoiceId);
     }
   }
 
-  // Count every successfully paid recurring invoice, including future renewals.
+  // Count successful recurring subscription renewals. The initial subscription
+  // payment was already counted from its paid Checkout Session above, so exclude
+  // the subscription-creation invoice to prevent double-counting.
   for (const subscriptionId of subscriptionIds) {
     for await (const invoice of stripe.invoices.list({
       subscription: subscriptionId,
@@ -426,6 +443,9 @@ async function calculateDonationStats() {
     })) {
       if (!invoice.paid || Number(invoice.amount_paid || 0) <= 0) continue;
 
+      if (initialSubscriptionInvoiceIds.has(invoice.id)) continue;
+      if (invoice.billing_reason === 'subscription_create') continue;
+
       const paidAt =
         invoice.status_transitions && invoice.status_transitions.paid_at
           ? invoice.status_transitions.paid_at
@@ -433,7 +453,8 @@ async function calculateDonationStats() {
 
       payments.push({
         amountCents: Number(invoice.amount_paid || 0),
-        paidAt: Number(paidAt || invoice.created || 0)
+        paidAt: Number(paidAt || invoice.created || 0),
+        source: 'subscription_renewal_invoice'
       });
     }
   }
